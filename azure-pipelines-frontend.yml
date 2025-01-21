@@ -6,9 +6,9 @@ pool:
 
 steps:
 - task: NodeTool@0
-  displayName: 'Use Node 16'
+  displayName: 'Use Node 18'
   inputs:
-    versionSpec: '16.x'
+    versionSpec: '18.x'
 
 - script: |
     cd client
