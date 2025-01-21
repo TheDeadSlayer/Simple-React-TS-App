@@ -20,5 +20,5 @@ steps:
   displayName: 'Deploy React build folder to Azure App Service'
   inputs:
     azureSubscription: 'MyAzureServiceConnection'
-    appName: 'myReactFrontendApp'
+    appName: 'ReactJs-Frontend-12'
     package: 'client/build'
