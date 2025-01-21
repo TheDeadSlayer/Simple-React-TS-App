@@ -1,0 +1,30 @@
+trigger:
+- main  # or your desired branch
+
+pool:
+  vmImage: 'ubuntu-latest'
+
+variables:
+  # You can override these in DevOps pipeline variables if needed
+  DOCKER_REPO_NAME: 'myapp/backend'
+  IMAGE_TAG: 'latest'
+
+steps:
+- task: Docker@2
+  displayName: 'Build and push Docker image to ACR'
+  inputs:
+    containerRegistry: 'MyACRServiceConnection'  # The Service Connection name for your Azure Container Registry
+    repository: '$(DOCKER_REPO_NAME)'
+    command: 'buildAndPush'
+    Dockerfile: 'server/Dockerfile'
+    tags: |
+      $(IMAGE_TAG)
+
+# (Optional) Deploy to Azure Web App for Containers
+- task: AzureWebAppContainer@1
+  displayName: 'Deploy container image to Azure Web App (Container)'
+  inputs:
+    azureSubscription: 'MyAzureServiceConnection'  # The Service Connection for Azure Resource Manager
+    appName: 'myNodeBackendApp'                    # The Web App name in Azure
+    containers: |
+      myregistry.azurecr.io/$(DOCKER_REPO_NAME):$(IMAGE_TAG)
