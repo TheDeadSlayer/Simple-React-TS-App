@@ -1,0 +1,24 @@
+trigger:
+- main
+
+pool:
+  vmImage: 'ubuntu-latest'
+
+steps:
+- task: NodeTool@0
+  displayName: 'Use Node 16'
+  inputs:
+    versionSpec: '16.x'
+
+- script: |
+    cd client
+    npm install
+    npm run build
+  displayName: 'Build React App'
+
+- task: AzureWebApp@1
+  displayName: 'Deploy React build folder to Azure App Service'
+  inputs:
+    azureSubscription: 'MyAzureServiceConnection'
+    appName: 'myReactFrontendApp'
+    package: 'client/build'
