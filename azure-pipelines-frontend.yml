@@ -1,5 +1,5 @@
 trigger:
-- main
+- 
 
 pool:
   vmImage: 'ubuntu-latest'
@@ -15,6 +15,12 @@ steps:
     npm install
     npm run build
   displayName: 'Build React App'
+
+# Debugging Step: List contents to verify build
+- script: |
+    cd client
+    ls -la
+  displayName: 'List client directory contents'
 
 - task: AzureWebApp@1
   displayName: 'Deploy React build folder to Azure App Service'
