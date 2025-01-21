@@ -27,4 +27,4 @@ steps:
   inputs:
     azureSubscription: 'MyAzureServiceConnection'
     appName: 'ReactJs-Frontend-12'
-    package: 'client/build'
+    package: 'client/dist'
