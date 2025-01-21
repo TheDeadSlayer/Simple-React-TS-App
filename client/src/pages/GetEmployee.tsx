@@ -11,12 +11,20 @@ const GetEmployee: React.FC = () => {
   const [employee, setEmployee] = useState<Employee | null>(null);
   const [error, setError] = useState<string | null>(null);
 
+  // Get API URL from environment variables
+  const apiUrl = import.meta.env.VITE_REACT_APP_API_URL || "http://localhost:4000/api";
+
   const handleGetData = async () => {
     setError(null); // Clear any previous error
     setEmployee(null); // Clear previously shown data
 
+    if (!apiUrl) {
+      setError('API URL is not defined. Please check the environment configuration.');
+      return;
+    }
+
     try {
-      const response = await fetch(`http://localhost:4000/api/employees/${searchId}`);
+      const response = await fetch(`${apiUrl}/employees/${searchId}`);
       if (!response.ok) {
         // 404 or 500, etc.
         const data = await response.json().catch(() => null);
