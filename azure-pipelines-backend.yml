@@ -4,23 +4,31 @@ pool:
   vmImage: 'ubuntu-latest'
 
 variables:
-  APP_NAME: 'nodejs-backend-12'  # Must be lowercase
-  RESOURCE_GROUP: 'myAppRG'
-  DOCKER_IMAGE: 'my-backend-app'  # New lowercase image name
+  azureSubscription: 'MyAzureServiceConnection'
+  appName: 'NodeJs-Backend-12'
+  dockerfilePath: '/sever/Dockerfile'
+  imageName: 'appsvc/node:18-lts'
 
-steps:
-- task: Docker@2
-  displayName: 'Build Docker Image'
-  inputs:
-    command: 'build'
-    Dockerfile: 'server/Dockerfile'
-    tags: 'latest'
-    arguments: '--platform linux/amd64 -t $(DOCKER_IMAGE):latest'
+stages:
+- stage: BuildAndDeploy
+  displayName: Build and Deploy Stage
+  jobs:
+  - job: BuildAndDeploy
+    displayName: Build and Deploy Job
+    steps:
+    - checkout: self
 
-- task: AzureWebAppContainer@1
-  displayName: 'Deploy to Azure Web App'
-  inputs:
-    azureSubscription: 'MyAzureServiceConnection'
-    appName: $(APP_NAME)
-    containers: '$(DOCKER_IMAGE):latest'
-    resourceGroupName: $(RESOURCE_GROUP)
+    - task: Docker@2
+      displayName: Build Docker Image
+      inputs:
+        command: build
+        dockerfile: $(dockerfilePath)
+        tags: |
+          latest
+
+    - task: AzureWebAppContainer@1
+      displayName: Deploy Docker Image to Azure Web App
+      inputs:
+        azureSubscription: $(azureSubscription)
+        appName: $(appName)
+        imageName: $(imageName)
