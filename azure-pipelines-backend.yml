@@ -6,7 +6,7 @@ pool:
 variables:
   azureSubscription: 'MyAzureServiceConnection'
   appName: 'NodeJs-Backend-12'
-  dockerfilePath: '/sever/Dockerfile'
+  dockerfilePath: '/server/Dockerfile'
   imageName: 'appsvc/node:18-lts'
 
 stages:
