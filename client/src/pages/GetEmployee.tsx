@@ -1,4 +1,5 @@
 import React, { useState } from 'react';
+import { getConfig } from '../config';
 
 interface Employee {
   id: string;
@@ -12,19 +13,20 @@ const GetEmployee: React.FC = () => {
   const [error, setError] = useState<string | null>(null);
 
   // Get API URL from environment variables
-  const apiUrl = import.meta.env.VITE_REACT_APP_API_URL;
+  // const apiUrl = import.meta.env.VITE_REACT_APP_API_URL;
 
   const handleGetData = async () => {
     setError(null); // Clear any previous error
     setEmployee(null); // Clear previously shown data
 
-    if (!apiUrl) {
-      setError('API URL is not defined. Please check the environment configuration.');
-      return;
-    }
+    // if (!apiUrl) {
+    //   setError('API URL is not defined. Please check the environment configuration.');
+    //   return;
+    // }
 
     try {
-      const response = await fetch(`${apiUrl}/employees/${searchId}`);
+      const { VITE_REACT_API_URL } = getConfig();
+      const response = await fetch(`${VITE_REACT_API_URL}/employees/${searchId}`);
       if (!response.ok) {
         // 404 or 500, etc.
         const data = await response.json().catch(() => null);

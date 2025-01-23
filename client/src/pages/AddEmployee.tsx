@@ -1,4 +1,5 @@
 import React, { useState } from 'react';
+import { getConfig } from '../config';
 
 const AddEmployee: React.FC = () => {
   const [employeeId, setEmployeeId] = useState('');
@@ -8,17 +9,18 @@ const AddEmployee: React.FC = () => {
   // We'll store any error message here
   const [error, setError] = useState<string | null>(null);
   // Get API URL from environment variables
-  const apiUrl = import.meta.env.VITE_REACT_APP_API_URL;
+  // const apiUrl = import.meta.env.VITE_REACT_APP_API_URL;
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     setError(null); // Clear any previous error
-    if (!apiUrl) {
-      setError('API URL is not defined. Please check the environment configuration.');
-      return;
-    }
+    // if (!apiUrl) {
+    //   setError('API URL is not defined. Please check the environment configuration.');
+    //   return;
+    // }
 
     try {
-      const response = await fetch(`${apiUrl}/employees`, {
+      const { VITE_REACT_API_URL } = getConfig();
+      const response = await fetch(`${VITE_REACT_API_URL}/employees`, {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({
