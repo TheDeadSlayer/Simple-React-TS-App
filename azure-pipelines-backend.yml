@@ -35,8 +35,9 @@ stages:
               versionSpec: '18.x'  
             displayName: "Set Up Node.js"
           - script: |
+              cd server
               npm install 
-            displayName: "Install Dependencies"
+            displayName: "Install Dependencies in Server Folder"
           - script: |
              npm run build
             displayName: "Build NodeJs App"
