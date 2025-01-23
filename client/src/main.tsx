@@ -1,11 +1,11 @@
-// src/index.tsx
+// src/main.tsx
 
-import React from 'react';
+
 import { StrictMode } from 'react';
 import { createRoot } from 'react-dom/client';
-import App from './App';
-import { loadConfig } from './config';
 import './index.css';
+import App from './App.tsx';
+import { loadConfig } from './config';
 
 const rootElement = document.getElementById('root');
 
