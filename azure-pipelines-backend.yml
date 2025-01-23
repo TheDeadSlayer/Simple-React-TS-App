@@ -4,31 +4,77 @@ pool:
   vmImage: 'ubuntu-latest'
 
 variables:
+  buildConfiguration: 'Release'
   azureSubscription: 'MyAzureServiceConnection'
   appName: 'NodeJs-Backend-12'
-  dockerfilePath: 'server/Dockerfile'
-  imageName: 'appsvc/node:18-lts'
+  resourceGroupName: 'myAppRG'
+  acrName: 'myappacr123' 
+  acrLoginServer: 'idk'
+  imageName: 'my-backend-image'
+  port: '80'
 
 stages:
-- stage: BuildAndDeploy
-  displayName: Build and Deploy Stage
-  jobs:
-  - job: BuildAndDeploy
-    displayName: Build and Deploy Job
-    steps:
-    - checkout: self
-
-    - task: Docker@2
-      displayName: Build Docker Image
-      inputs:
-        command: build
-        dockerfile: $(dockerfilePath)
-        tags: |
-          latest
-
-    - task: AzureWebAppContainer@1
-      displayName: Deploy Docker Image to Azure Web App
-      inputs:
-        azureSubscription: $(azureSubscription)
-        appName: $(appName)
-        imageName: $(imageName)
+  - stage: Build
+    displayName: "Build Stage"
+    jobs:
+      - job: Build
+        displayName: "Build React App"
+        pool:
+          vmImage: 'ubuntu-latest'
+        steps:
+          - checkout: self
+          - script: |
+              cd server
+              ls -al
+ 
+              echo "Navigated to web folder"
+              ls -al
+            displayName: "Verify Web Folder Structure"
+          - task: NodeTool@0
+            inputs:
+              versionSpec: '18.x'  
+            displayName: "Set Up Node.js"
+          - script: |
+              npm install 
+            displayName: "Install Dependencies"
+          - script: |
+             npm run build
+            displayName: "Build NodeJs App"
+          - script: |
+              echo "$(acrPassword)" | docker login $(acrLoginServer) -u $(acrName) --password-stdin
+              
+            displayName: 'Log in to Azure Container Registry'
+          - script: |
+              docker build -f Dockerfile -t $(acrLoginServer)/$(imageName):$(Build.BuildId) .
+              docker push $(acrLoginServer)/$(imageName):$(Build.BuildId)
+            displayName: 'Build and Push Docker Image to ACR'
+  - stage: Deploy
+    displayName: "Deploy Stage"
+    dependsOn: Build
+    jobs:
+      - job: Deploy
+        displayName: "Deploy to Azure App Service"
+        pool:
+          vmImage: 'ubuntu-latest'
+        steps:
+          - task: AzureWebAppContainer@1
+            inputs:
+             azureSubscription: $(azureSubscription)
+             appName: 'NodeJs-Backend-12'
+             imageName: $(acrLoginServer)/$(imageName):$(Build.BuildId)
+          - task: AzureCLI@2
+            inputs:
+              azureSubscription: $(azureSubscription)
+              scriptType: bash
+              scriptLocation: inlineScript
+              inlineScript: |
+               az webapp config container set \
+                --name  $(appName) \
+                --resource-group $(resourceGroupName) \
+                --docker-custom-image-name $(acrLoginServer)/$(imageName):$(Build.BuildId) \
+                --docker-registry-server-url https://$(acrLoginServer)\
+                --enable-app-service-storage false
+               az webapp config appsettings set \
+               --name $(appName) \
+               --resource-group $(resourceGroupName) \
+               --settings PORT=$(port)
