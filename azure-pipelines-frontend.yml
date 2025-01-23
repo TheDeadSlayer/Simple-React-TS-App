@@ -21,9 +21,11 @@ steps:
     ls -la
   displayName: 'List client directory contents'
 
-- task: AzureWebApp@1
-  displayName: 'Deploy React build folder to Azure App Service'
+- task: AzureRmWebAppDeployment@4
+  
   inputs:
+    ConnectionType: 'AzureRM'
     azureSubscription: 'MyAzureServiceConnection'
-    appName: 'ReactJs-Frontend-12'
-    package: 'client/dist'
+    WebAppName: 'ReactJs-Frontend-12'
+    packageForLinux: '$(System.DefaultWorkingDirectory)/**/*.zip'
+  displayName: 'Deploy React build folder to Azure App Service'
