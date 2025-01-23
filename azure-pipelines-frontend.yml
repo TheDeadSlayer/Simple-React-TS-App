@@ -41,3 +41,5 @@ steps:
     appName: 'ReactJs-Frontend-12'
     package: '$(Build.ArtifactStagingDirectory)/app.zip'
     deploymentMethod: 'zipDeploy'
+    # Add startup command here
+    startupCommand: 'pm2 serve /home/site/wwwroot --spa --no-daemon'
