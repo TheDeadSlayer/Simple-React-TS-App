@@ -39,6 +39,7 @@ stages:
               npm install 
             displayName: "Install Dependencies in Server Folder"
           - script: |
+             cd server
              npm run build
             displayName: "Build NodeJs App"
           - script: |
