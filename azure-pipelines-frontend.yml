@@ -4,40 +4,40 @@ pool:
   vmImage: 'ubuntu-latest'
 
 variables:
-  azureSubscription: 'MyAzureServiceConnection'
-  webAppName: 'ReactJs-Frontend-12'
+  workspace: 'client'  # Explicit workspace definition
 
 steps:
 - task: NodeTool@0
-  displayName: 'Use Node 20'
   inputs:
     versionSpec: '20.x'
+  displayName: 'Use Node 20'
 
 - script: |
-    cd client
-    npm ci
+    cd $(workspace)
+    npm ci --prefer-offline
     npm run build
-  displayName: 'Install dependencies and build'
+  displayName: 'Build Project'
 
-- script: |
-    cd client/dist
-    ls -la
-  displayName: 'Verify build output'
+- task: PowerShell@2
+  displayName: 'Validate Build Output'
+  inputs:
+    targetType: 'inline'
+    script: |
+      Get-ChildItem -Path $(workspace)/dist -Recurse
+      Test-Path -Path $(workspace)/dist/index.html
 
 - task: ArchiveFiles@2
-  displayName: 'Create deployment package'
+  displayName: 'Package Assets'
   inputs:
-    rootFolderOrFile: 'client/dist'
+    rootFolderOrFile: '$(workspace)/dist'
     includeRootFolder: false
-    archiveType: 'zip'
     archiveFile: '$(Build.ArtifactStagingDirectory)/app.zip'
-    replaceExistingArchive: true
 
 - task: AzureWebApp@1
-  displayName: 'Deploy to Azure Web App'
+  displayName: 'Deploy to Azure'
   inputs:
-    azureSubscription: $(azureSubscription)
+    azureSubscription: 'MyAzureServiceConnection'
     appType: 'webAppLinux'
-    appName: $(webAppName)
+    appName: 'ReactJs-Frontend-12'
     package: '$(Build.ArtifactStagingDirectory)/app.zip'
-    runtimeStack: 'NODE|20-lts'
+    deploymentMethod: 'zipDeploy'
