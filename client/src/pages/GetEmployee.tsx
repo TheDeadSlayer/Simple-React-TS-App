@@ -12,7 +12,7 @@ const GetEmployee: React.FC = () => {
   const [error, setError] = useState<string | null>(null);
 
   // Get API URL from environment variables
-  const apiUrl = import.meta.env.VITE_REACT_APP_API_URL || "http://localhost:4000/api";
+  const apiUrl = import.meta.env.REACT_APP_API_URL;
 
   const handleGetData = async () => {
     setError(null); // Clear any previous error
