@@ -9,7 +9,7 @@ variables:
   appName: 'NodeJs-Backend-12'
   resourceGroupName: 'myAppRG'
   acrName: 'myappacr123' 
-  acrLoginServer: 'idk'
+  acrLoginServer: 'myappacr123.azurecr.io'
   imageName: 'my-backend-image'
   port: '80'
 
