@@ -13,7 +13,7 @@ steps:
   displayName: 'Use Node 20'
 
 - script: |
-    cd $(workspace)a
+    cd $(workspace)
     npm ci --prefer-offline
     echo "VITE_API_URL=__AZURE_API_URL__" > .env.production
     npm run build
