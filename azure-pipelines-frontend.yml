@@ -3,6 +3,10 @@ trigger: none
 pool:
   vmImage: 'ubuntu-latest'
 
+variables:
+  azureSubscription: 'MyAzureServiceConnection'
+  webAppName: 'ReactJs-Frontend-12'
+
 steps:
 - task: NodeTool@0
   displayName: 'Use Node 20'
@@ -11,15 +15,14 @@ steps:
 
 - script: |
     cd client
-    npm install
+    npm ci
     npm run build
-  displayName: 'Build React App'
+  displayName: 'Install dependencies and build'
 
-# Debugging Step: Verify build output
 - script: |
-    cd client
-    ls -la dist/
-  displayName: 'Verify dist folder exists'
+    cd client/dist
+    ls -la
+  displayName: 'Verify build output'
 
 - task: ArchiveFiles@2
   displayName: 'Create deployment package'
@@ -30,10 +33,11 @@ steps:
     archiveFile: '$(Build.ArtifactStagingDirectory)/app.zip'
     replaceExistingArchive: true
 
-- task: AzureRmWebAppDeployment@4
+- task: AzureWebApp@1
   displayName: 'Deploy to Azure Web App'
   inputs:
-    ConnectionType: 'AzureRM'
-    azureSubscription: 'MyAzureServiceConnection'
-    WebAppName: 'ReactJs-Frontend-12'
-    packageForLinux: '$(Build.ArtifactStagingDirectory)/app.zip'
+    azureSubscription: $(azureSubscription)
+    appType: 'webAppLinux'
+    appName: $(webAppName)
+    package: '$(Build.ArtifactStagingDirectory)/app.zip'
+    runtimeStack: 'NODE|20-lts'
