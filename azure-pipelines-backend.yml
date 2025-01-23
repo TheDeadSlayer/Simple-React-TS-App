@@ -47,6 +47,7 @@ stages:
               
             displayName: 'Log in to Azure Container Registry'
           - script: |
+              cd server
               docker build -f Dockerfile -t $(acrLoginServer)/$(imageName):$(Build.BuildId) .
               docker push $(acrLoginServer)/$(imageName):$(Build.BuildId)
             displayName: 'Build and Push Docker Image to ACR'
