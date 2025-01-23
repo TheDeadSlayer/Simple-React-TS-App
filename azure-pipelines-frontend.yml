@@ -13,8 +13,10 @@ steps:
   displayName: 'Use Node 20'
 
 - script: |
-    cd $(workspace)
+    cd $(workspace)a
     npm ci --prefer-offline
+    echo "VITE_API_URL=__AZURE_API_URL__" > .env.production
+    npm run build
     npm run build
   displayName: 'Build Project'
 
@@ -42,4 +44,7 @@ steps:
     package: '$(Build.ArtifactStagingDirectory)/app.zip'
     deploymentMethod: 'zipDeploy'
     # Add startup command here
-    startupCommand: 'pm2 serve /home/site/wwwroot --spa --no-daemon'
+    startupCommand: |
+      # Replace placeholder with Azure environment variable
+      sed -i "s|__AZURE_API_URL__|$VITE_REACT_API_URL|g" /home/site/wwwroot/.env.production
+      pm2 serve /home/site/wwwroot --spa --no-daemon
