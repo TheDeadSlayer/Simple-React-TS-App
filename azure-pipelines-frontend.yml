@@ -27,5 +27,5 @@ steps:
     ConnectionType: 'AzureRM'
     azureSubscription: 'MyAzureServiceConnection'
     WebAppName: 'ReactJs-Frontend-12'
-    packageForLinux: '$(System.DefaultWorkingDirectory)/**/*.zip'
+    packageForLinux: 'client/dist'
   displayName: 'Deploy React build folder to Azure App Service'
