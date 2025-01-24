@@ -65,5 +65,5 @@ stages:
     - script: |
          cd $(workspace)
          echo "build-$(Build.BuildId).zip" > blob-info.txt
-    - publish: blob-info.txt
+    - publish: /$(workspace)/blob-info.txt
       artifact: blob-info
