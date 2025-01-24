@@ -76,4 +76,4 @@ stages:
           - task: AzureStaticWebApp@0
             inputs:
               app_location: 'dist'
-              azure_static_web_apps_api_token: $(prodSwAKey)
+              azure_static_web_apps_api_token: $(SwAKey)
