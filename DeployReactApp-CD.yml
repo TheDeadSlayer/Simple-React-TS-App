@@ -77,7 +77,7 @@ stages:
                   --file app.zip \
                   --auth-mode login  # Authenticate using the service connection
             displayName: 'Download artifact'
-          - script: unzip app.zip -d dist
+          - script: unzip app.zip 
             displayName: 'Unzip artifact'
           - task: AzureStaticWebApp@0
             inputs:
