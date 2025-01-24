@@ -74,7 +74,7 @@ stages:
                   --account-name $(storageAccountName) \
                   --container-name $(containerName) \
                   --name $zipName \
-                  --file app.zip
+                  --file app.zip \
                   --auth-mode login  # Authenticate using the service connection
             displayName: 'Download artifact'
           - script: unzip app.zip -d dist
