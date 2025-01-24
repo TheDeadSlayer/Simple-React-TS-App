@@ -37,7 +37,8 @@ stages:
     # Create zip artifact
     - script: |
         cd $(workspace)
-        zip -r build-$(Build.BuildId).zip dist/
+        cd dist
+        zip -r build-$(Build.BuildId).zip
       displayName: 'Create zip artifact'
     - script: |
         cd $(workspace)
