@@ -81,5 +81,5 @@ stages:
             displayName: 'Unzip artifact'
           - task: AzureStaticWebApp@0
             inputs:
-              app_location: 'dist'
+              app_location: '.' 
               azure_static_web_apps_api_token: $(SwAKey)
