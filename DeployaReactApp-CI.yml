@@ -41,7 +41,8 @@ stages:
         zip -r build-$(Build.BuildId).zip dist/
       displayName: 'Create zip artifact'
     - script: |
-        aName="build-$(Build.BuildId).zip"
+        cd $(workspace)
+        artifcatName="build-$(Build.BuildId).zip"
         echo "##vso[task.setvariable variable=artifcatName]$artifcatName"
       displayName: 'Set artifcatName variable'
 
@@ -65,5 +66,5 @@ stages:
     - script: |
          cd $(workspace)
          echo "build-$(Build.BuildId).zip" > blob-info.txt
-    - publish: /$(workspace)/blob-info.txt
+    - publish: $(workspace)/blob-info.txt
       artifact: blob-info
