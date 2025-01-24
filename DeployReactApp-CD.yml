@@ -1,8 +1,8 @@
 resources:
   pipelines:
   - pipeline: ci-pipeline
-    #source: 'DeployaReactApp-CI.yml'
-    #trigger: true
+    source: 'TheDeadSlayer.Simple-React-TS-App (14)'
+    trigger: none
 
 variables:
  # - group: dev-vars  # Contains devSwAKey, resourceGroup, appName
