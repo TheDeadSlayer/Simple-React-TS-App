@@ -2,7 +2,7 @@ resources:
   pipelines:
   - pipeline: ci-pipeline
     source: 'TheDeadSlayer.Simple-React-TS-App (14)'
-    trigger: none
+    trigger: true
 
 variables:
  # - group: dev-vars  # Contains devSwAKey, resourceGroup, appName
@@ -50,8 +50,8 @@ stages:
 
 - stage: DeployProd
   displayName: Deploy to Production
-  #dependsOn: DeployStaging
-  #condition: succeeded()
+  # dependsOn: DeployStaging
+  # condition: succeeded()
   jobs:
   - deployment: DeployProd
     environment: Production  # Requires manual approval
