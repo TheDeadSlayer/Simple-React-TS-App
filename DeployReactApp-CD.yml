@@ -63,13 +63,19 @@ stages:
           steps:
           - download: ci-pipeline
             artifact: blob-info
-          - script: |
-              zipName=$(cat $(Pipeline.Workspace)/ci-pipeline/blob-info/blob-info.txt)
-              az storage blob download \
-                --account-name $(storageAccountName) \
-                --container-name $(containerName) \
-                --name $zipName \
-                --file app.zip
+          - task: AzureCLI@2  # Use Azure CLI with service connection
+            inputs:
+              azureSubscription: $(serviceConnection)
+              scriptType: 'bash'
+              scriptLocation: 'inlineScript'
+              inlineScript: |
+                zipName=$(cat $(Pipeline.Workspace)/ci-pipeline/blob-info/blob-info.txt)
+                az storage blob download \
+                  --account-name $(storageAccountName) \
+                  --container-name $(containerName) \
+                  --name $zipName \
+                  --file app.zip
+                  --auth-mode login  # Authenticate using the service connection
             displayName: 'Download artifact'
           - script: unzip app.zip -d dist
             displayName: 'Unzip artifact'
