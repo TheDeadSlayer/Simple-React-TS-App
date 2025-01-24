@@ -1,0 +1,79 @@
+resources:
+  pipelines:
+  - pipeline: ci-pipeline
+    source: 'DeployaReactApp-CI.yml'
+    trigger: true
+
+variables:
+ # - group: dev-vars  # Contains devSwAKey, resourceGroup, appName
+ # - group: staging-vars
+  - group: prod
+
+stages:
+#- stage: DeployDev
+#  displayName: Deploy to Dev
+#  jobs:
+#  - job: Deploy
+#    pool:
+#      vmImage: 'ubuntu-latest'
+#    steps:
+#    - download: ci-pipeline
+#      artifact: blob-info
+#    - script: |
+#        zipName=$(cat $(Pipeline.Workspace)/ci-pipeline/blob-info/blob-info.txt)
+#        az storage blob download \
+#          --account-name $(storageAccountName) \
+#          --container-name $(containerName) \
+#          --name $zipName \
+#          --file app.zip
+#      displayName: 'Download artifact'
+#    - script: unzip app.zip -d dist
+#      displayName: 'Unzip artifact'
+#    - task: AzureStaticWebApp@0
+#      inputs:
+#        app_location: 'dist'
+#        azure_static_web_apps_api_token: $(devSwAKey)
+
+#- stage: DeployStaging
+#  displayName: Deploy to Staging
+#  dependsOn: DeployDev
+#  jobs:
+#  - job: Deploy
+#    pool:
+#      vmImage: 'ubuntu-latest'
+#    steps:
+    # Repeat steps from DeployDev with staging variables
+#    - task: AzureStaticWebApp@0
+#      inputs:
+#        app_location: 'dist'
+#        azure_static_web_apps_api_token: $(stagingSwAKey)
+
+- stage: DeployProd
+  displayName: Deploy to Production
+  #dependsOn: DeployStaging
+  #condition: succeeded()
+  jobs:
+  - deployment: DeployProd
+    environment: Production  # Requires manual approval
+    pool:
+      vmImage: 'ubuntu-latest'
+    strategy:
+      runOnce:
+        deploy:
+          steps:
+          - download: ci-pipeline
+            artifact: blob-info
+          - script: |
+              zipName=$(cat $(Pipeline.Workspace)/ci-pipeline/blob-info/blob-info.txt)
+              az storage blob download \
+                --account-name $(storageAccountName) \
+                --container-name $(containerName) \
+                --name $zipName \
+                --file app.zip
+            displayName: 'Download artifact'
+          - script: unzip app.zip -d dist
+            displayName: 'Unzip artifact'
+          - task: AzureStaticWebApp@0
+            inputs:
+              app_location: 'dist'
+              azure_static_web_apps_api_token: $(prodSwAKey)
