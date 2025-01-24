@@ -1,0 +1,63 @@
+trigger:
+- main
+
+variables:
+  group: prod
+  workspace: 'client'
+  storageAccountName: $(storageAccountName)
+  containerName: $(containerName)
+  vmImageName: 'ubuntu-latest'
+
+stages:
+- stage: Build
+  jobs:
+  - job: BuildJob
+    pool:
+      vmImage: $(vmImageName)
+    steps:
+    - checkout: self
+
+    # Install dependencies and build
+    - task: NodeTool@0
+      inputs:
+        versionSpec: '20.x'
+    - script: |
+        cd $(workspace)
+        npm ci --prefer-offline
+        cat <<EOF > public/config.json
+        {
+          "VITE_REACT_API_URL": "$(apiURL)"
+        }
+        EOF
+      displayName: 'Install dependencies'
+    - script: npm run build
+      displayName: 'Build app'
+
+    # Create zip artifact
+    - script: |
+        zip -r build-$(Build.BuildId).zip dist/
+      displayName: 'Create zip artifact'
+    - script: |
+        aName="build-$(Build.BuildId).zip"
+        echo "##vso[task.setvariable variable=artifcatName]$artifcatName"
+      displayName: 'Set artifcatName variable'
+
+
+    # Upload to Azure Blob Storage
+    - task: AzureCLI@2
+      inputs:
+        azureSubscription: $(serviceConnection)
+        scriptType: 'bash'
+        scriptLocation: 'inlineScript'
+        inlineScript: |
+          az storage blob upload \
+            --account-name $(storageAccountName) \
+            --container-name $(containerName) \
+            --name build-$(Build.BuildId).zip \
+            --file build-$(Build.BuildId).zip \
+            --overwrite
+
+    # Save artifact name and publish as artifact
+    - script: echo "build-$(Build.BuildId).zip" > blob-info.txt
+    - publish: blob-info.txt
+      artifact: blob-info
