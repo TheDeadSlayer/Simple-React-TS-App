@@ -2,11 +2,11 @@ trigger:
 - main
 
 variables:
-  group: prod
-  workspace: 'client'
-  storageAccountName: $(storageAccountName)
-  containerName: $(containerName)
-  vmImageName: 'ubuntu-latest'
+  - group: prod            # Variable group reference
+  - name: workspace        # Pipeline variable
+    value: 'client'
+  - name: vmImageName      # Pipeline variable
+    value: 'ubuntu-latest'
 
 stages:
 - stage: Build
